@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { GetStaticProps } from "next";
 
-function Home() {
+function Home({ org }: any) {
   return (
     <div>
-      <h1></h1>
+      <h1>{org.login}</h1>
+      <h3>{org.description}</h3>
       <Lex />
     </div>
   );
@@ -23,7 +25,6 @@ function Lex() {
         <img
           src="https://i.ibb.co/M9ZpRCW/Screenshot-from-2020-11-16-15-31-00.png"
           alt="73540"
-          border="1"
         />
       </div>
       <br />
@@ -40,5 +41,20 @@ function Lex() {
 
   return showLex ? componentWithLex : componentWithoutLex;
 }
+
+// é chamada antes da página ser renderizada no servidor
+// popula via props o componente
+// indicada para landing pages ou páginas que alteram pouco
+export const getStaticProps: GetStaticProps = async () => {
+  const response = await fetch("https://api.github.com/orgs/rocketseat");
+  const data = await response.json();
+
+  return {
+    props: {
+      org: data,
+    },
+    revalidate: 10 // atualiza o cache a cada 10s
+  };
+};
 
 export default Home;
